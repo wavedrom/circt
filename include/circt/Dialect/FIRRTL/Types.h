@@ -31,6 +31,24 @@ class FlipType;
 class BundleType;
 class FVectorType;
 
+/// This represents a flattened bundle field element.
+struct FlatBundleFieldEntry {
+  /// This is the underlying ground type of the field.
+  Type type;
+  /// This is a suffix to add to the field name to make it unique.
+  std::string suffix;
+  /// This indicates whether the field was flipped to be an output.
+  bool isOutput;
+};
+
+/// The character used as a separator in FlatBundleFieldEntry suffixes
+const char kFlatBundleFieldSeparator = '_';
+
+/// Convert a nested bundle of fields into a flat list of fields.  This is used
+/// when working with instances and mems to flatten them.
+void flattenBundleTypes(Type type, StringRef suffixSoFar, bool isFlipped,
+                        SmallVectorImpl<FlatBundleFieldEntry> &results);
+
 // This is a common base class for all FIRRTL types.
 class FIRRTLType : public Type {
 public:

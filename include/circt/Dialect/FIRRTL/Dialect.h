@@ -29,6 +29,9 @@ public:
   static StringRef getDialectNamespace() { return "firrtl"; }
 };
 
+/// The string used to name the FIRRTL name attribute
+const StringRef kFIRRTLName = "firrtl.name";
+
 /// If the specified attribute list has a firrtl.name attribute, return its
 /// value.
 StringAttr getFIRRTLNameAttr(ArrayRef<NamedAttribute> attrs);

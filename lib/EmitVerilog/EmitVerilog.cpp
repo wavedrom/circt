@@ -5,6 +5,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "circt/EmitVerilog.h"
+#include "circt/Dialect/FIRRTL/Types.h"
 #include "circt/Dialect/FIRRTL/Visitors.h"
 #include "circt/Dialect/RTL/Ops.h"
 #include "circt/Dialect/RTL/Visitors.h"
@@ -108,44 +109,6 @@ static bool isNoopCast(Operation *op) {
       return true;
 
   return false;
-}
-
-/// This represents a flattened bundle field element.
-struct FlatBundleFieldEntry {
-  /// This is the underlying ground type of the field.
-  Type type;
-  /// This is a suffix to add to the field name to make it unique.
-  std::string suffix;
-  /// This indicates whether the field was flipped to be an output.
-  bool isOutput;
-};
-
-/// Convert a nested bundle of fields into a flat list of fields.  This is used
-/// when working with instances and mems to flatten them.
-static void flattenBundleTypes(Type type, StringRef suffixSoFar, bool isFlipped,
-                               SmallVectorImpl<FlatBundleFieldEntry> &results) {
-  if (auto flip = type.dyn_cast<FlipType>())
-    return flattenBundleTypes(flip.getElementType(), suffixSoFar, !isFlipped,
-                              results);
-
-  // In the base case we record this field.
-  auto bundle = type.dyn_cast<BundleType>();
-  if (!bundle) {
-    results.push_back({type, suffixSoFar.str(), isFlipped});
-    return;
-  }
-
-  SmallString<16> tmpSuffix(suffixSoFar);
-
-  // Otherwise, we have a bundle type.  Break it down.
-  for (auto &elt : bundle.getElements()) {
-    // Construct the suffix to pass down.
-    tmpSuffix.resize(suffixSoFar.size());
-    tmpSuffix.push_back('_');
-    tmpSuffix.append(elt.first.strref());
-    // Recursively process subelements.
-    flattenBundleTypes(elt.second, tmpSuffix, isFlipped, results);
-  }
 }
 
 namespace {

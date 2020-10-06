@@ -79,6 +79,9 @@ def FModuleOp : FIRRTLOp<"module",
       return OpBuilder(&bodyBlock, std::prev(bodyBlock.end()));
     }
 
+    // TODO(mlir): These helpers could live on FunctionLike instead of FuncOp.
+    void eraseArguments(ArrayRef<unsigned> argIndices);
+
   private:
     // This trait needs access to the hooks defined below.
     friend class OpTrait::FunctionLike<FModuleOp>;

@@ -269,15 +269,9 @@ int32_t FIRRTLType::getBitWidthOrSentinel() {
 /// asynchronous reset.
 bool FIRRTLType::isResetType() {
   return TypeSwitch<FIRRTLType, bool>(*this)
-    .Case<ResetType, AsyncResetType>([](Type) {
-      return true;
-    })
-    .Case<UIntType>([](UIntType a) {
-      return a.getWidth() == 1;
-    })
-    .Default([](Type) {
-      return false;
-    });
+      .Case<ResetType, AsyncResetType>([](Type) { return true; })
+      .Case<UIntType>([](UIntType a) { return a.getWidth() == 1; })
+      .Default([](Type) { return false; });
 }
 
 //===----------------------------------------------------------------------===//
@@ -318,6 +312,34 @@ struct WidthTypeStorage : mlir::TypeStorage {
   int32_t width;
 };
 } // namespace detail
+
+/// Convert a nested bundle of fields into a flat list of fields.  This is used
+/// when working with instances and mems to flatten them.
+void flattenBundleTypes(Type type, StringRef suffixSoFar, bool isFlipped,
+                        SmallVectorImpl<FlatBundleFieldEntry> &results) {
+  if (auto flip = type.dyn_cast<FlipType>())
+    return flattenBundleTypes(flip.getElementType(), suffixSoFar, !isFlipped,
+                              results);
+
+  // In the base case we record this field.
+  auto bundle = type.dyn_cast<BundleType>();
+  if (!bundle) {
+    results.push_back({type, suffixSoFar.str(), isFlipped});
+    return;
+  }
+
+  SmallString<16> tmpSuffix(suffixSoFar);
+
+  // Otherwise, we have a bundle type.  Break it down.
+  for (auto &elt : bundle.getElements()) {
+    // Construct the suffix to pass down.
+    tmpSuffix.resize(suffixSoFar.size());
+    tmpSuffix.push_back(kFlatBundleFieldSeparator);
+    tmpSuffix.append(elt.first.strref());
+    // Recursively process subelements.
+    flattenBundleTypes(elt.second, tmpSuffix, isFlipped, results);
+  }
+}
 } // namespace firrtl
 } // namespace circt
 

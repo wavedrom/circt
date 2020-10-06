@@ -19,7 +19,7 @@ StringAttr firrtl::getFIRRTLNameAttr(ArrayRef<NamedAttribute> attrs) {
     // FIXME: We currently use firrtl.name instead of name because this makes
     // the FunctionLike handling in MLIR core happier.  It otherwise doesn't
     // allow attributes on module parameters.
-    if (argAttr.first != "firrtl.name")
+    if (argAttr.first != kFIRRTLName)
       continue;
 
     return argAttr.second.dyn_cast<StringAttr>();
@@ -88,7 +88,7 @@ struct FIRRTLOpAsmDialectInterface : public OpAsmDialectInterface {
 
 FIRRTLDialect::FIRRTLDialect(MLIRContext *context)
     : Dialect(getDialectNamespace(), context,
-    ::mlir::TypeID::get<FIRRTLDialect>()) {
+              ::mlir::TypeID::get<FIRRTLDialect>()) {
 
   // Register types.
   addTypes<SIntType, UIntType, ClockType, ResetType, AsyncResetType, AnalogType,

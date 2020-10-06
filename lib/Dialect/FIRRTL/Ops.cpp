@@ -7,6 +7,7 @@
 #include "mlir/IR/DialectImplementation.h"
 #include "mlir/IR/FunctionImplementation.h"
 #include "mlir/IR/StandardTypes.h"
+#include "llvm/ADT/BitVector.h"
 
 using namespace circt;
 using namespace firrtl;
@@ -133,7 +134,7 @@ static void buildModule(OpBuilder &builder, OperationState &result,
       continue;
 
     auto argAttr =
-        NamedAttribute(builder.getIdentifier("firrtl.name"), ports[i].first);
+        NamedAttribute(builder.getIdentifier(kFIRRTLName), ports[i].first);
 
     result.addAttribute(getArgAttrName(i, attrNameBuf),
                         builder.getDictionaryAttr(argAttr));
@@ -207,7 +208,7 @@ static void printFunctionSignature2(OpAsmPrinter &p, Operation *op,
 
         // If the name is the same as we would otherwise use, then we're good!
         if (tmpStream.str().drop_front() == nameAttr.getValue()) {
-          tmp = "firrtl.name";
+          tmp = kFIRRTLName;
           elidedAttrs = tmp;
         }
       }
@@ -313,7 +314,7 @@ static ParseResult parseFModuleOp(OpAsmParser &parser, OperationState &result,
     // If an explicit name attribute was present, don't add the implicit one.
     bool hasNameAttr = false;
     for (auto &elt : attrs)
-      if (elt.first.str() == "firrtl.name")
+      if (elt.first.str() == kFIRRTLName)
         hasNameAttr = true;
     if (hasNameAttr || entryArgs.empty())
       continue;
@@ -327,7 +328,7 @@ static ParseResult parseFModuleOp(OpAsmParser &parser, OperationState &result,
       continue;
 
     auto nameAttr = StringAttr::get(arg.name.drop_front(), context);
-    attrs.push_back({Identifier::get("firrtl.name", context), nameAttr});
+    attrs.push_back({Identifier::get(kFIRRTLName, context), nameAttr});
   }
 
   // Add the attributes to the function arguments.
@@ -358,6 +359,42 @@ static LogicalResult verifyFModuleOp(FModuleOp module) {
   }
 
   return success();
+}
+
+// TODO: This is a clone of mlir::FuncOp::eraseArguments, which could be moved
+// to FunctionLike.
+void FModuleOp::eraseArguments(ArrayRef<unsigned> argIndices) {
+  auto oldType = getType();
+  int originalNumArgs = oldType.getNumInputs();
+  llvm::BitVector eraseIndices(originalNumArgs);
+  for (auto index : argIndices)
+    eraseIndices.set(index);
+  auto shouldEraseArg = [&](int i) { return eraseIndices.test(i); };
+
+  // There are 3 things that need to be updated:
+  // - Function type.
+  // - Arg attrs.
+  // - Block arguments of entry block.
+
+  // Update the function type and arg attrs.
+  SmallVector<Type, 4> newInputTypes;
+  SmallVector<MutableDictionaryAttr, 4> newArgAttrs;
+  for (int i = 0; i < originalNumArgs; i++) {
+    if (shouldEraseArg(i))
+      continue;
+    newInputTypes.emplace_back(oldType.getInput(i));
+    newArgAttrs.emplace_back(getArgAttrDict(i));
+  }
+  setType(FunctionType::get(newInputTypes, oldType.getResults(), getContext()));
+  setAllArgAttrs(newArgAttrs);
+
+  // Update the entry block's arguments.
+  // We do this in reverse so that we erase later indices before earlier
+  // indices, to avoid shifting the later indices.
+  Block &entry = front();
+  for (int i = 0; i < originalNumArgs; i++)
+    if (shouldEraseArg(originalNumArgs - i - 1))
+      entry.eraseArgument(originalNumArgs - i - 1);
 }
 
 //===----------------------------------------------------------------------===//
