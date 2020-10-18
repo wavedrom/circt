@@ -19,25 +19,10 @@
             "../../llvm/build/tools/mlir/include",
             "../../include"
         ],
+        # For some reason, this has an extra ../ compared to the paths above in include_dirs
         "libraries": [
-            '/home/drom/work/github/llvm/circt/llvm/build/lib/*.a',
-            '/home/drom/work/github/llvm/circt/build/lib/*.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libCIRCTLLHDSimEngine.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libCIRCTLLHDSimState.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRFIRRTL.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRFIRRTLToLLHD.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRHandshakeOps.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRHandshakeToFIRRTL.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRLLHD.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRLLHDTargetVerilog.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRLLHDToLLVM.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRLLHDTransforms.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRRTL.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRStandardToHandshake.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRStandardToStaticLogic.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRStaticLogicOps.a',
-            # '/home/drom/work/github/llvm/circt/build/lib/libMLIRSV.a'
-            # '../../llvm/build/tools/mlir/lib/'
+            "../../../build/lib/*.a",
+            "../../../llvm/build/lib/*.a",
         ]
     }]
 }
