@@ -1,0 +1,33 @@
+{
+  "name": "circt",
+  "version": "0.1.0",
+  "description": "NodeJS to CIRCT bindings",
+  "main": "./lib/index.js",
+  "scripts": {
+    "test": "mocha",
+    "__install": "node-gyp-build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/circt/node.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/circt/node/issues"
+  },
+  "homepage": "https://github.com/circt/node#readme",
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "cmake-js": "^6.1.0",
+    "node-addon-api": "^3.0.2",
+    "node-gyp-build": "^4.2.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^7.11.0",
+    "mocha": "^8.1.3",
+    "node-gyp": "^7.1.0",
+    "prebuildify": "^4.1.0"
+  }
+}
