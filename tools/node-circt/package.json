@@ -5,7 +5,8 @@
   "main": "./lib/index.js",
   "scripts": {
     "test": "mocha",
-    "__install": "node-gyp-build"
+    "__install": "node-gyp-build",
+    "tidy": "clang-tidy-9 node-circt.cpp"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
     "chai": "^4.2.0",
     "eslint": "^7.11.0",
     "mocha": "^8.1.3",
+    "node-cmake": "^2.5.1",
     "node-gyp": "^7.1.0",
     "prebuildify": "^4.1.0"
   }
