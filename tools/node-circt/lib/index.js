@@ -1,11 +1,13 @@
 'use strict';
 
-// const binding = require('node-gyp-build')(__dirname)
 const binding = require('bindings');
+const circt = binding('circt.node');
+
+// for cmake
+// const circt = binding('node_circt');
+
 
 const pkg = require('../package.json');
-
-const circt = binding('circt.node');
 
 module.exports = {
   version: pkg.version,
