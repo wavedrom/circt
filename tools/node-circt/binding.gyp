@@ -23,6 +23,7 @@
         "libraries": [
             "../../../build/lib/*.a",
             "../../../llvm/build/lib/*.a",
+            "../../../llvm/build/lib/libLLVMSupport.a"
         ]
     }]
 }
