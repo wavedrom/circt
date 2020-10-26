@@ -22,17 +22,20 @@ Napi::String toStringMLIR(const Napi::CallbackInfo &info) {
 
   Napi::Value arg0 = info[0];
   if (arg0.Type() != napi_object) {
-    Napi::Error::New(env, "An object argument was expected.").ThrowAsJavaScriptException();
+    Napi::Error::New(env, "An object argument was expected.")
+        .ThrowAsJavaScriptException();
     return Napi::String::New(env, "?");
   }
   Napi::Object obj = arg0.As<Napi::Object>();
   const Napi::Value propMlir = obj.Get("mlir");
   if (propMlir.Type() != napi_external) {
-    Napi::Error::New(env, "An external property of argument was expected.").ThrowAsJavaScriptException();
+    Napi::Error::New(env, "An external property of argument was expected.")
+        .ThrowAsJavaScriptException();
     return Napi::String::New(env, "??");
   }
-  Napi::External<mlir::MLIRContext> extContext = propMlir.As<Napi::External<mlir::MLIRContext>>();
-  mlir::MLIRContext* context = extContext.Data();
+  Napi::External<mlir::MLIRContext> extContext =
+      propMlir.As<Napi::External<mlir::MLIRContext>>();
+  mlir::MLIRContext *context = extContext.Data();
 
   return Napi::String::New(env, "world");
 }
