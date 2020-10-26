@@ -1,22 +1,24 @@
 'use strict';
 
 const expect = require('chai').expect;
-const lib = require('../lib/index.js');
-console.log(lib);
+const {circt} = require('../lib/index.js');
 
 describe('basic', () => {
 
   it('typeof circt', () =>
-    expect(lib.circt).to.be.an('object'));
-
-  it('typeof circt.hello', () =>
-    expect(lib.circt.hello).to.be.an('function'));
+    expect(circt).to.be.an('object'));
 
   it('typeof circt.getNewContext', () =>
-    expect(lib.circt.getNewContext).to.be.an('function'));
+    expect(circt.getNewContext).to.be.an('function'));
 
-  it('getNewContext', () =>
-    expect(lib.circt.getNewContext()).to.be.an('object'));
+  it('typeof circt.toStringMLIR', () =>
+    expect(circt.toStringMLIR).to.be.an('function'));
+
+  it('circt.toStringMLIR()', () => {
+    const cxt = circt.getNewContext();
+    expect(cxt).to.be.an('object');
+    expect(circt.toStringMLIR(cxt)).to.eq('world');
+  });
 
 });
 

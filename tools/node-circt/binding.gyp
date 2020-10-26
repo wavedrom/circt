@@ -11,7 +11,9 @@
         "sources": [
             "node-circt.cpp"
         ],
+        "defines": [ "NAPI_DISABLE_CPP_EXCEPTIONS" ],
         "include_dirs": [
+            "./node_modules/node-addon-api",
             "../../build/include",
             "../../llvm/llvm/include",
             "../../llvm/mlir/include",
